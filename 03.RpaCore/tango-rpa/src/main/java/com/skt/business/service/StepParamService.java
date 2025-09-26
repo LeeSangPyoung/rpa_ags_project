@@ -54,7 +54,7 @@ public class StepParamService {
     	return outList;
     }
 
-    public void processParamsAndSaveToTemp(Step stepAction, Long stepExecutionId) {
+    public void processParamsAndSaveToTemp(Step stepAction) {
     	String playwrightScriptDir = props.getExecutor().getPlaywrightScriptDir();
     	String playwrightTargetDir = props.getExecutor().getPlaywrightTargetDir();
         List<StepParamTemplate> params = stepParamMapper.selectParamTemplateByStepId(stepAction.getStepId());
@@ -166,17 +166,6 @@ public class StepParamService {
                         value = accountMap.getOrDefault(param.getParamKey(), param.getParamValueTemplate());
                         
                         contentCopy = contentCopy.replace(token, value != null ? value : "");
-                        
-                        // rpa_step_param_in 테이블에 저장 (stepExecutionId가 있을 때만)
-                        if (stepExecutionId != null) {
-                            StepParamIn stepParamIn = new StepParamIn();
-                            stepParamIn.setStepExecutionId(stepExecutionId);
-                            stepParamIn.setParamKey(param.getParamKey());
-                            stepParamIn.setParamValue(value);
-                            stepParamIn.setParamValueDefault(value);  // 동일한 값
-                            stepParamIn.setDynamic(false);            // false로 고정
-                            stepParamInMapper.insertStepParamIn(stepParamIn);
-                        }
                     }
                     
  
@@ -200,17 +189,6 @@ public class StepParamService {
                     String value = param.getParamValueTemplate() != null ? param.getParamValueTemplate() : "";
                     log.info("🔁 치환 토큰: {} → {}", token, value);
                     scriptContent = scriptContent.replace(token, value);
-                    
-                    // rpa_step_param_in 테이블에 저장 (stepExecutionId가 있을 때만)
-                    if (stepExecutionId != null) {
-                        StepParamIn stepParamIn = new StepParamIn();
-                        stepParamIn.setStepExecutionId(stepExecutionId);
-                        stepParamIn.setParamKey(param.getParamKey());
-                        stepParamIn.setParamValue(value);
-                        stepParamIn.setParamValueDefault(value);  // 동일한 값
-                        stepParamIn.setDynamic(false);            // false로 고정
-                        stepParamInMapper.insertStepParamIn(stepParamIn);
-                    }
                 }
 
                 Files.createDirectories(versionedDir);
@@ -230,8 +208,27 @@ public class StepParamService {
                     stepAction.getScriptFile(),
                     e.getMessage());
         }
+    }
+    
+    /**
+     * StepExecution이 생성된 후에 파라미터를 rpa_step_param_in 테이블에 저장
+     */
+    public void saveParamsToStepParamIn(Step stepAction, Long stepExecutionId) {
+        List<StepParamTemplate> params = stepParamMapper.selectParamTemplateByStepId(stepAction.getStepId());
         
-        
-        
+        for (StepParamTemplate param : params) {
+            String value = param.getParamValueTemplate() != null ? param.getParamValueTemplate() : "";
+            
+            // rpa_step_param_in 테이블에 저장
+            StepParamIn stepParamIn = new StepParamIn();
+            stepParamIn.setStepExecutionId(stepExecutionId);
+            stepParamIn.setParamKey(param.getParamKey());
+            stepParamIn.setParamValue(value);
+            stepParamIn.setParamValueDefault(value);  // 동일한 값
+            stepParamIn.setDynamic(false);            // false로 고정
+            stepParamInMapper.insertStepParamIn(stepParamIn);
+            
+            log.info("✅ 파라미터 저장: {} = {}", param.getParamKey(), value);
+        }
     }
 }

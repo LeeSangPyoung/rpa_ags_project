@@ -173,7 +173,6 @@ public class StepActionService {
             log.info("LSP outList : {}", outList.toString());
             log.info(actionRslt);
             log.info("SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-            stepParamService.processParamsAndSaveToTemp(stepAction, null);
 
             // StepAction 실행 상태 "RUNNING"으로 로그 기록
             // long stepActionLogId = stepActionLogService.insertRunningLog(stepAction.getStepId(), "Step execution started.");
@@ -213,6 +212,9 @@ public class StepActionService {
                 stepExecution.setStatus("READY");
                 stepExecution.setStartTime(LocalDateTime.now());
                 stepExecutionMapper.insertStepExecution(stepExecution);
+                
+                // 파라미터를 rpa_step_param_in 테이블에 저장
+                stepParamService.saveParamsToStepParamIn(stepAction, stepExecution.getId());
                 
                 RpaRequest rpaRequest = new RpaRequest();
                 rpaRequest.setType(stepAction.getRpaType().toLowerCase());
