@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaAccountGroupMapper">
+    <select id="getAccountGroupCbx" resultMap="RpaComboboxResultMap.RpaCombobox">
+        SELECT ID AS VALUE,
+        GROUP_NAME AS LABEL
+        FROM RPA_ACCOUNT_GROUP
+    </select>
+
+    <select id="countAccountGroupById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_ACCOUNT_GROUP WHERE id = #{id}
+    </select>
+
+    <select id="getAccountGroupList" resultMap="RpaAccountGroupResultMap.RpaAccountGroup">
+		<include refid="getAccountGroupListSql"></include>
+        ORDER BY ID
+    </select>
+
+    <sql id="getAccountGroupListSql">
+        SELECT A.ID,
+            A.GROUP_NAME,
+        	(SELECT COUNT(*) FROM RPA_ACCOUNT B WHERE B.ACCOUNT_GROUP_ID = A.ID) AS ACCOUNT_TOTAL,
+            A.FRST_REG_USER_ID,
+        	TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+        	A.CHG_REG_USER_ID,
+        	TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_ACCOUNT_GROUP A
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND A.GROUP_NAME LIKE '%' || #{keyword} || '%'
+            </if>
+            <if test='groupName != null and groupName != ""'>
+                AND A.GROUP_NAME = #{groupName}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insertRpaAccountGroup">
+        INSERT INTO RPA_ACCOUNT_GROUP(
+            GROUP_NAME,
+            FRST_REG_USER_ID,
+            FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            CHG_REG_DATE)
+        VALUES (
+            #{groupName},
+            #{frstRegUserId},
+            now(),
+            #{chgRegUserId},
+            #{chgRegDate}::timestamp
+        );
+    </insert>
+
+    <update id="updateRpaAccountGroup">
+        UPDATE RPA_ACCOUNT_GROUP
+        SET
+        <if test='groupName != null and groupName != ""'>
+            GROUP_NAME = #{groupName},
+        </if>
+        <if test='frstRegUserId != null and frstRegUserId != ""'>
+            FRST_REG_USER_ID = #{frstRegUserId},
+        </if>
+        <if test='chgRegUserId != null and chgRegUserId != ""'>
+            CHG_REG_USER_ID =  #{chgRegUserId},
+        </if>
+        	CHG_REG_DATE = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteRpaAccountGroup">
+        DELETE FROM RPA_ACCOUNT_GROUP
+        WHERE  ID = #{id}
+    </delete>
+</mapper>

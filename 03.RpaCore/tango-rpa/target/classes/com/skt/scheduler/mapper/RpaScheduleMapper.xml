@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skt.scheduler.mapper.RpaSchedulerMapper">
+
+    <!-- 활성화된 스케줄 목록 가져오기 -->
+    <select id="getActiveSchedules" resultType="com.skt.business.model.entity.Action">
+        <![CDATA[
+        SELECT * 
+        FROM rpa.rpa_action
+        WHERE status = 'ACTIVE' 
+        AND (start_date <= now() AND (end_date IS NULL OR end_date >= now()))
+        ]]>
+    </select>
+
+    <!-- next_run_time 갱신 -->
+    <update id="updateNextRunTime">
+        UPDATE rpa.rpa_action
+        SET next_run_time = #{nextRunTime}, chg_reg_date = now()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

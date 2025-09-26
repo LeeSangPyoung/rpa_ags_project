@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaHistoryMapper">
+	<!-- Action Instance start -->
+    <select id="getActionInstancePage" resultMap="RpaHistoryResultMap.RpaActionInstance">
+		<include refid="getActionInstanceListSql"></include>
+        ORDER BY ID DESC
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getActionInstanceListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getActionInstanceListSql"></include>
+        ) A
+    </select>
+
+    <sql id="getActionInstanceListSql">
+        SELECT
+            A.ID,
+            A.RPA_ACTION_ID,
+        	B.NAME AS RPA_ACTION_NAME,
+        	B.DESCRIPTION,
+            A.STATUS,
+        	TO_CHAR(A.START_TIME, 'YYYY-MM-DD HH24:MI:SS') AS START_TIME,
+        	TO_CHAR(A.END_TIME, 'YYYY-MM-DD HH24:MI:SS') AS END_TIME,
+            A.TRIGGERED_BY,
+            A.FRST_REG_USER_ID,
+        	TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            A.CHG_REG_USER_ID,
+        	TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_ACTION_INSTANCE A
+        INNER JOIN RPA_ACTION B
+        ON B.ID = A.RPA_ACTION_ID
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND B.NAME LIKE '%' || #{keyword} || '%'
+            </if>
+            <if test='id != null'>
+            	AND A.ID = #{id}
+            </if>
+            <if test='rpaActionId != null'>
+                AND A.RPA_ACTION_ID = #{rpaActionId}
+            </if>
+            <if test='status != null and status != ""'>
+                AND A.STATUS = #{status}
+            </if>
+            <if test='startTime != null and startTime != ""'>
+                AND date_trunc('day', A.START_TIME) = #{startTime}::timestamp
+            </if>
+            <if test='endTime != null and endTime != ""'>
+                AND date_trunc('day', A.END_TIME) = #{endTime}::timestamp
+            </if>
+            <if test='triggeredBy != null and triggeredBy != ""'>
+                AND A.TRIGGERED_BY = #{triggeredBy}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+    <!-- Action Instance End -->
+
+    <!-- Step Instance Start -->
+    <select id="getStepInstancePage" resultMap="RpaHistoryResultMap.RpaStepInstance">
+        <include refid="getStepInstanceListSql"></include>
+        ORDER BY ID DESC
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getStepInstanceListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getStepInstanceListSql"></include>
+        ) A
+    </select>
+
+    <sql id="getStepInstanceListSql">
+        SELECT
+            A.ID,
+            A.RPA_STEP_ID,
+            B.NAME AS RPA_STEP_NAME,
+            B.DESCRIPTION,
+            A.RPA_ACTION_INSTANCE_ID,
+        	D.ID AS RPA_ACTION_ID,
+            D.NAME AS RPA_ACTION_NAME,
+        	A.STATUS,
+            TO_CHAR(A.START_TIME, 'YYYY-MM-DD HH24:MI:SS') AS START_TIME,
+            TO_CHAR(A.END_TIME, 'YYYY-MM-DD HH24:MI:SS') AS END_TIME,
+            A.FRST_REG_USER_ID,
+            TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            A.CHG_REG_USER_ID,
+            TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_STEP_INSTANCE A
+        INNER JOIN RPA_STEP B
+        ON B.ID = A.RPA_STEP_ID
+        INNER JOIN RPA_ACTION_INSTANCE C
+        ON C.ID = A.RPA_ACTION_INSTANCE_ID
+        INNER JOIN RPA_ACTION D
+        ON D.ID = C.RPA_ACTION_ID
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND B.NAME LIKE '%' || #{keyword} || '%'
+            </if>
+            <if test='id != null'>
+                AND A.ID = #{id}
+            </if>
+            <if test='rpaStepId != null'>
+                AND A.RPA_STEP_ID = #{rpaStepId}
+            </if>
+            <if test='rpaActionId != null'>
+                AND D.ID = #{rpaActionId}
+            </if>
+            <if test='rpaActionInstanceId != null'>
+                AND A.RPA_ACTION_INSTANCE_ID = #{rpaActionInstanceId}
+            </if>
+            <if test='status != null and status != ""'>
+                AND A.STATUS = #{status}
+            </if>
+            <if test='startTime != null and startTime != ""'>
+                AND date_trunc('day', A.START_TIME) = #{startTime}::timestamp
+            </if>
+            <if test='endTime != null and endTime != ""'>
+                AND date_trunc('day', A.END_TIME) = #{endTime}::timestamp
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+    <!-- Step Instance End -->
+
+    <!-- Step Execution Start -->
+    <select id="getStepExecutionPage" resultMap="RpaHistoryResultMap.RpaStepExecution">
+        <include refid="getStepExecutionListSql"></include>
+        ORDER BY ID DESC
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getStepExecutionListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getStepExecutionListSql"></include>
+        ) A
+    </select>
+
+    <sql id="getStepExecutionListSql">
+        SELECT
+            A.ID,
+            A.RPA_STEP_INSTANCE_ID,
+        	C.ID AS RPA_STEP_ID,
+            C.NAME AS RPA_STEP_NAME,
+            D.ID AS RPA_ACTION_ID,
+            D.NAME AS RPA_ACTION_NAME,
+            C.DESCRIPTION,
+            A.ACCOUNT_ID,
+            A.STATUS,
+            TO_CHAR(A.START_TIME, 'YYYY-MM-DD HH24:MI:SS') AS START_TIME,
+            TO_CHAR(A.END_TIME, 'YYYY-MM-DD HH24:MI:SS') AS END_TIME,
+            A.EXECUTION_GROUP_ID,
+            A.RESULT_LOG,
+            A.FRST_REG_USER_ID,
+            TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            A.CHG_REG_USER_ID,
+            TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_STEP_EXECUTION A
+        INNER JOIN RPA_STEP_INSTANCE B
+        ON B.ID = A.RPA_STEP_INSTANCE_ID
+        INNER JOIN RPA_STEP C
+        ON C.ID = B.RPA_STEP_ID
+        INNER JOIN RPA_ACTION D
+        ON D.ID = C.RPA_ACTION_ID
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND ( A.ACCOUNT_ID = CASE WHEN #{keyword} ~ '^[-+]?\d+$' THEN CAST(#{keyword} AS bigint) ELSE -1 END )
+            </if>
+            <if test='id != null'>
+                AND A.ID = #{id}
+            </if>
+            <if test='rpaStepInstanceId != null'>
+                AND A.RPA_STEP_INSTANCE_ID = #{rpaStepInstanceId}
+            </if>
+            <if test='rpaStepId != null'>
+                AND C.ID = #{rpaStepId}
+            </if>
+            <if test='rpaActionId != null'>
+                AND D.ID = #{rpaActionId}
+            </if>
+            <if test='accountId != null'>
+                AND A.ACCOUNT_ID = #{accountId}
+            </if>
+            <if test='status != null and status != ""'>
+                AND A.STATUS = #{status}
+            </if>
+            <if test='startTime != null and startTime != ""'>
+                AND date_trunc('day', A.START_TIME) = #{startTime}::timestamp
+            </if>
+            <if test='endTime != null and endTime != ""'>
+                AND date_trunc('day', A.END_TIME) = #{endTime}::timestamp
+            </if>
+            <if test='executionGroupId != null and executionGroupId != ""'>
+                AND A.EXECUTION_GROUP_ID = #{executionGroupId}
+            </if>
+            <if test='resultLog != null and resultLog != ""'>
+                AND A.RESULT_LOG = #{resultLog}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+    <!-- Step Execution End -->
+
+    <select id="getExecutionLogDetail" resultMap="RpaHistoryResultMap.ExecutionLogDetail">
+        SELECT
+        	A.ID,
+        	A.RESULT_LOG,
+            B.STEP_EXECUTION_ID AS IN_STEP_EXECUTION_ID,
+            B.NO,
+            B.PARAM_KEY AS IN_PARAM_KEY,
+            B.PARAM_VALUE AS IN_PARAM_VALUE,
+            B.IS_DYNAMIC,
+            B.PARAM_VALUE_DEFAULT,
+            B.FRST_REG_USER_ID AS IN_FRST_REG_USER_ID,
+            TO_CHAR(B.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS IN_FRST_REG_DATE,
+            B.CHG_REG_USER_ID AS IN_CHG_REG_USER_ID,
+            TO_CHAR(B.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS IN_CHG_REG_DATE,
+            C.ID AS OUT_ID,
+            C.STEP_EXECUTION_ID AS OUT_STEP_EXECUTION_ID,
+            C.PARAM_KEY AS OUT_PARAM_KEY,
+            C.PARAM_VALUE AS OUT_PARAM_VALUE,
+            C.FRST_REG_USER_ID AS OUT_FRST_REG_USER_ID,
+            TO_CHAR(C.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS OUT_FRST_REG_DATE,
+            C.CHG_REG_USER_ID AS OUT_CHG_REG_USER_ID,
+            TO_CHAR(C.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS OUT_CHG_REG_DATE
+        FROM RPA_STEP_EXECUTION A
+        LEFT OUTER JOIN RPA_STEP_PARAM_IN B
+        ON B.STEP_EXECUTION_ID = A.ID
+        LEFT OUTER JOIN RPA_STEP_PARAM_OUT C
+        ON C.STEP_EXECUTION_ID = A.ID
+        <where>
+			A.ID = #{id}
+        </where>
+    </select>
+
+</mapper>

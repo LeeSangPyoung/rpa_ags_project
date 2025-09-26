@@ -1,0 +1,50 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID
+      timeout: 30m
+  path: /rpa-service
+spring:
+  # DATASOURCE
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/rpa
+    username: rpauser
+    password: rpauser
+  security :
+    lock-limit: 5
+    allow-origin-patterns: http://10.34.133.*:*,http://localhost:*
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:com/rpa/mapper/*.xml
+
+logging:
+  level:
+    com:
+      rpa: DEBUG
+      zaxxer : WARN
+    io:
+      swagger: WARN
+    jdbc:
+      sqlonly: DEBUG
+    org:
+      mybatis: DEBUG
+      springframework:
+        jdbc:
+          core: DEBUG
+        boot:
+          autoconfigure: INFO
+
+jwt:
+  secret: VpDweAUHrpSpRcg3qZFE++13ESjnteCDapMPIwKExvZy34wYiCuFi7gNw+3XkAJlbBy66H30WaxxtbhQRZsiqw==
+  expiration: 360000000000000000
+
+user:
+  password-period: 2592000000 #30 days
+  password-default: Skax1q2w3e4r%T
+
+websocket:
+  rpa-action-change-trigger: rpa_action_tbl_changes
+  result-log-change-trigger: rpa_action_tbl_changes

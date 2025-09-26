@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skt.business.mapper.StepParamTemplateMapper">
+
+
+    
+    
+    <select id="selectParamTemplateByStepId"
+            parameterType="long"
+            resultType="com.skt.business.model.entity.StepParamTemplate">
+        SELECT
+            step_id,
+            id,
+            param_key,
+            param_value_template,
+            is_dynamic
+        FROM
+            rpa_step_param_in_template
+        WHERE
+            step_id = #{stepActionId}
+        ORDER BY
+            id ASC
+    </select>
+
+</mapper>

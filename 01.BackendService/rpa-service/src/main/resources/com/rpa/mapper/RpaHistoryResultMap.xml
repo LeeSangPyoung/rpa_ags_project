@@ -1,0 +1,88 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "RpaHistoryResultMap">
+    <resultMap id="RpaActionInstance" type="com.rpa.model.dto.RpaActionInstanceDto">
+        <result column = "id" jdbcType = "INTEGER" property = "id" />
+        <result column = "rpa_action_id" jdbcType = "INTEGER" property = "rpaActionId" />
+        <result column = "rpa_action_name" jdbcType = "VARCHAR" property = "rpaActionName" />
+        <result column = "description" jdbcType = "VARCHAR" property = "description" />
+        <result column = "status" jdbcType = "VARCHAR" property = "status" />
+        <result column = "start_time" jdbcType = "VARCHAR" property = "startTime" />
+        <result column = "end_time" jdbcType = "VARCHAR" property = "endTime" />
+        <result column = "triggered_by" jdbcType = "VARCHAR" property = "triggeredBy" />
+        <result column = "frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+
+    <resultMap id="RpaStepInstance" type="com.rpa.model.dto.RpaStepInstanceDto">
+        <result column = "id" jdbcType = "INTEGER" property = "id" />
+        <result column = "rpa_step_id" jdbcType = "INTEGER" property = "rpaStepId" />
+        <result column = "rpa_step_name" jdbcType = "VARCHAR" property = "rpaStepName" />
+        <result column = "description" jdbcType = "VARCHAR" property = "description" />
+        <result column = "rpa_action_instance_id" jdbcType = "INTEGER" property = "rpaActionInstanceId" />
+        <result column = "rpa_action_id" jdbcType = "INTEGER" property = "rpaActionId" />
+        <result column = "rpa_action_name" jdbcType = "VARCHAR" property = "rpaActionName" />
+        <result column = "status" jdbcType = "VARCHAR" property = "status" />
+        <result column = "start_time" jdbcType = "VARCHAR" property = "startTime" />
+        <result column = "end_time" jdbcType = "VARCHAR" property = "endTime" />
+        <result column = "frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+
+    <resultMap id="RpaStepExecution" type="com.rpa.model.dto.RpaStepExecutionDto">
+        <result column = "id" jdbcType = "INTEGER" property = "id" />
+        <result column = "rpa_step_instance_id" jdbcType = "INTEGER" property = "rpaStepInstanceId" />
+        <result column = "rpa_step_id" jdbcType = "INTEGER" property = "rpaStepId" />
+        <result column = "rpa_step_name" jdbcType = "VARCHAR" property = "rpaStepName" />
+        <result column = "rpa_action_id" jdbcType = "INTEGER" property = "rpaActionId" />
+        <result column = "rpa_action_name" jdbcType = "VARCHAR" property = "rpaActionName" />
+        <result column = "description" jdbcType = "VARCHAR" property = "description" />
+        <result column = "account_id" jdbcType = "INTEGER" property = "accountId" />
+        <result column = "status" jdbcType = "VARCHAR" property = "status" />
+        <result column = "start_time" jdbcType = "VARCHAR" property = "startTime" />
+        <result column = "end_time" jdbcType = "VARCHAR" property = "endTime" />
+        <result column = "execution_group_id" jdbcType = "VARCHAR" property = "executionGroupId" />
+        <result column = "result_log" jdbcType = "VARCHAR" property = "resultLog" />
+        <result column = "frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+
+    <resultMap id="ExecutionLogDetail" type="com.rpa.model.dto.ExecutionLogDetailDto">
+        <result column = "id" jdbcType = "INTEGER" property = "rpaStepExecutionId" />
+        <result column = "result_log" jdbcType = "VARCHAR" property = "resultLog" />
+        <collection property="rpaStepParamInDtoList" ofType="com.rpa.model.dto.RpaStepParamInDto" resultMap="RpaStepParamIn"/>
+        <collection property="rpaStepParamOutDtoList" ofType="com.rpa.model.dto.RpaStepParamOutDto" resultMap="RpaStepParamOut"/>
+    </resultMap>
+
+    <resultMap id="RpaStepParamIn" type="com.rpa.model.dto.RpaStepParamInDto">
+        <result column = "in_step_execution_id" jdbcType = "INTEGER" property = "stepExecutionId" />
+        <result column = "no" jdbcType = "INTEGER" property = "no" />
+        <result column = "in_param_key" jdbcType = "VARCHAR" property = "paramKey" />
+        <result column = "in_param_value" jdbcType = "VARCHAR" property = "paramValue" />
+        <result column = "is_dynamic" jdbcType = "BOOLEAN" property = "isDynamic" />
+        <result column = "param_value_default" jdbcType = "VARCHAR" property = "paramValueDefault" />
+        <result column = "in_frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "in_frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "in_chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "in_chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+
+    <resultMap id="RpaStepParamOut" type="com.rpa.model.dto.RpaStepParamOutDto">
+        <result column = "out_id" jdbcType = "INTEGER" property = "id" />
+        <result column = "out_step_execution_id" jdbcType = "INTEGER" property = "stepExecutionId" />
+        <result column = "out_param_key" jdbcType = "VARCHAR" property = "paramKey" />
+        <result column = "out_param_value" jdbcType = "VARCHAR" property = "paramValue" />
+        <result column = "out_frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "out_frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "out_chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "out_chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+
+
+</mapper>

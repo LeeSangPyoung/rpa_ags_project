@@ -1,0 +1,5 @@
+export const AUTH_USER = ["ROLE_ADMIN", "ADMIN", "ROLE_USER", "USER", "ROLE_GUEST", "GUEST"]
+export const ADMIN_USER = ["ROLE_ADMIN", "ADMIN"]
+export const NORMAL_USER = ["ROLE_USER", "USER"]
+export const GUEST_USER = ["ROLE_GUEST", "GUEST"]
+export const EDITABLE_USER = ["ROLE_ADMIN", "ADMIN", "ROLE_USER", "USER"]

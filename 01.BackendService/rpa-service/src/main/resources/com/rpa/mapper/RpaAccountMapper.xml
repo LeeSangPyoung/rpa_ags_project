@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaAccountMapper">
+
+    <select id="countAccountById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_ACCOUNT
+        WHERE  ACCOUNT_GROUP_ID = #{accountGroupId}
+        AND ACCOUNT_NO = #{accountNo}
+        AND KEY = #{accountKey}
+    </select>
+
+    <select id="getAccountList" resultMap="RpaAccountResultMap.RpaAccount">
+		<include refid="getAccountListSql"></include>
+        ORDER BY ACCOUNT_GROUP_ID, ACCOUNT_NO, KEY
+    </select>
+
+    <sql id="getAccountListSql">
+        SELECT ID,
+            A.ACCOUNT_GROUP_ID,
+            B.GROUP_NAME,
+            A.ACCOUNT_NO,
+            A.KEY,
+            A.VALUE,
+            A.FRST_REG_USER_ID,
+        	TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+        	A.CHG_REG_USER_ID,
+        	TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_ACCOUNT A
+        INNER JOIN RPA_ACCOUNT_GROUP B
+        ON B.ID = A.ACCOUNT_GROUP_ID
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND (A.KEY LIKE '%' || #{keyword} || '%'
+                	OR A.VALUE LIKE '%' || #{keyword} || '%')
+            </if>
+            <if test='accountGroupId != null'>
+                AND A.ACCOUNT_GROUP_ID = #{accountGroupId}
+            </if>
+            <if test='accountNo != null'>
+                AND A.ACCOUNT_NO = #{accountNo}
+            </if>
+            <if test='accountKey != null and accountKey != ""'>
+                AND A.KEY = #{accountKey}
+            </if>
+            <if test='value != null and value != ""'>
+                AND A.VALUE = #{value}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insertRpaAccount">
+        INSERT INTO RPA_ACCOUNT(
+            ACCOUNT_GROUP_ID,
+            ACCOUNT_NO,
+            KEY,
+        	VALUE,
+            FRST_REG_USER_ID,
+            FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            CHG_REG_DATE)
+        VALUES (
+            #{accountGroupId},
+            #{accountNo},
+            #{accountKey},
+            #{value},
+            now(),
+            #{chgRegUserId},
+            #{chgRegDate}::timestamp
+        );
+    </insert>
+
+    <update id="updateRpaAccount">
+        UPDATE RPA_ACCOUNT
+        SET
+        <if test='accountGroupId != null'>
+            ACCOUNT_GROUP_ID = #{accountGroupId},
+        </if>
+        <if test='accountNo != null'>
+            ACCOUNT_NO = #{accountNo},
+        </if>
+        <if test='accountKey != null'>
+            KEY = #{accountKey},
+        </if>
+        <if test='value != null'>
+            VALUE = #{value},
+        </if>
+        <if test='frstRegUserId != null'>
+            FRST_REG_USER_ID = #{frstRegUserId},
+        </if>
+        <if test='chgRegUserId != null'>
+            CHG_REG_USER_ID =  #{chgRegUserId},
+        </if>
+        	CHG_REG_DATE = NOW();
+        WHERE  ACCOUNT_GROUP_ID = #{accountGroupId}
+        AND ACCOUNT_NO = #{accountNo}
+        AND KEY = #{key}
+    </update>
+
+    <delete id="deleteRpaAccount">
+        DELETE FROM RPA_ACCOUNT
+        WHERE  ACCOUNT_GROUP_ID = #{accountGroupId}
+        AND ACCOUNT_NO = #{accountNo}
+        AND KEY = #{accountKey}
+    </delete>
+</mapper>

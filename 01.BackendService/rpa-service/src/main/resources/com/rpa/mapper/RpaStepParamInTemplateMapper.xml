@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaStepParamInTemplateMapper">
+    <select id="getStepParamInTemplateCbx" resultMap="RpaComboboxResultMap.RpaCombobox">
+        SELECT ID AS VALUE,
+        	NAME AS LABEL
+        FROM RPA_STEP_PARAM_IN_TEMPLATE
+    </select>
+
+    <select id="countStepParamInTemplateById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_STEP_PARAM_IN_TEMPLATE WHERE id = #{id}
+    </select>
+
+    <select id="getStepParamInTemplatePage" resultMap="RpaStepParamInTemplateResultMap.RpaStepParamInTemplate">
+		<include refid="getStepParamInTemplateListSql"></include>
+        ORDER BY ID
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getStepParamInTemplateListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getStepParamInTemplateListSql"></include>
+        ) A
+    </select>
+
+    <sql id="getStepParamInTemplateListSql">
+        SELECT
+            A.ID,
+            A.STEP_ID,
+        	B.NAME AS STEP_NAME,
+            A.PARAM_KEY,
+            A.PARAM_VALUE_TEMPLATE,
+            A.IS_DYNAMIC,
+            A.FRST_REG_USER_ID,
+            TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            A.CHG_REG_USER_ID,
+            TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_STEP_PARAM_IN_TEMPLATE A
+        INNER JOIN RPA_STEP B
+        ON B.ID = A.STEP_ID
+        <where>
+            <if test='id != null'>
+            	AND A.ID = #{id}
+            </if>
+            <if test='stepId != null'>
+                AND A.STEP_ID = #{stepId}
+            </if>
+            <if test='paramKey != null and paramKey != ""'>
+                AND A.PARAM_KEY = #{paramKey}
+            </if>
+            <if test='paramValueTemplate != null and paramValueTemplate != ""'>
+                AND A.PARAM_VALUE_TEMPLATE = #{paramValueTemplate}
+            </if>
+            <if test='isDynamic != null'>
+                AND A.IS_DYNAMIC = #{isDynamic}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+    
+    <insert id="insertRpaStepParamInTemplate">
+        INSERT INTO RPA_STEP_PARAM_IN_TEMPLATE(
+            STEP_ID,
+            PARAM_KEY,
+            PARAM_VALUE_TEMPLATE,
+            IS_DYNAMIC,
+            FRST_REG_USER_ID,
+            FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            CHG_REG_DATE)
+        VALUES (
+            #{stepId},
+            #{paramKey},
+            #{paramValueTemplate},
+            #{isDynamic},
+            #{frstRegUserId},
+            NOW(),
+            #{chgRegUserId},
+            #{chgRegDate}::timestamp);
+    </insert>
+
+    <update id="updateRpaStepParamInTemplate">
+        UPDATE RPA_STEP_PARAM_IN_TEMPLATE SET
+        <if test='stepId != null'>
+            STEP_ID = #{stepId},
+        </if>
+        <if test='paramKey != null and paramKey != ""'>
+            PARAM_KEY = #{paramKey},
+        </if>
+        <if test='paramValueTemplate != null and paramValueTemplate != ""'>
+            PARAM_VALUE_TEMPLATE = #{paramValueTemplate},
+        </if>
+        <if test='isDynamic != null'>
+            IS_DYNAMIC = #{isDynamic},
+        </if>
+        <if test='frstRegUserId != null and frstRegUserId != ""'>
+            FRST_REG_USER_ID = #{frstRegUserId},
+        </if>
+        <if test='chgRegUserId != null and chgRegUserId != ""'>
+            CHG_REG_USER_ID = #{chgRegUserId},
+        </if>
+            CHG_REG_DATE = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteRpaStepParamInTemplate">
+        DELETE FROM RPA_STEP_PARAM_IN_TEMPLATE
+        WHERE  ID = #{id}
+    </delete>
+
+    <delete id="deleteRpaStepParamInTemplateList">
+        DELETE FROM RPA_STEP_PARAM_IN_TEMPLATE
+        <where>
+            ID IN (
+            <foreach collection="idList" item="id"  separator="," >
+                #{id}
+            </foreach>
+            )
+        </where>
+    </delete>
+
+</mapper>

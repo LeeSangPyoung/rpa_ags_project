@@ -1,0 +1,52 @@
+1. Phần backend Java :
+1.1 : Prerequisite
+ - JDK : java version 17.0.12
+ - Spring boot framework version 3.5.3
+ - Maven  : Apache Maven 3.9.11
+ 
+1.2 Config file application-dev.yml:
+- Datasouce :
+    datasource:
+		driver-class-name: org.postgresql.Driver
+		url: jdbc:postgresql://<db_server_ip>/<databasename>
+		username: <username>
+		password: <password>
+
+- CORS config: use to allow cors for backend service, ip range should be if of server where frontend app is deployed.
+	security
+		allow-origin-patterns: http://<ip-range1>:<port>, http://<ip-range2>:<port>
+Ex :
+security
+		allow-origin-patterns: http://10.34.147.*:8080, http://10.34.133.*:*
+
+1.3 Deploy
+	- Step 1 : cd to backend source folder
+	- Step 2 : run command line : "mvn clean install"
+	- Step 3 : get JAR file at <source_folder>/target/rpa-service.jar
+	- Step 4 : at folder contains JAR file , run command line : "java -jar rpa-service.jar"
+* default port of backend service is 8080
+
+
+2. Frontend Reactjs
+2.1 Prerequisite
+ - npm version 10.9.3
+ - react version 19.1.0
+
+2.2 Config file
+
+- .env.development.local :
+	REACT_APP_API_URL = "http://<backend_server_ip>:<port>/"
+EX : REACT_APP_API_URL = "http://10.34.133.132:8080/"
+
+2.3 Deploy :
+	- Step 1 : At folder contain frontend source run command line "npm install" to install dependencies
+	- Step 2 : run command line : "npm start"
+*default port of frontend service is 3000
+
+3.Database :
+Import .sql by command line
+ - Linux : "psql -U your_username -h your_host -p your_port -d your_database_name -f /path/to/your_file.sql"
+ - Windows : "psql -U your_username -h your_host -p your_port -d your_database_name -f "C:\path\to\your_file.sql"
+ 
+ * Need to create a database before import .sql
+ command line to create database : "createdb -U your_username your_database_name"

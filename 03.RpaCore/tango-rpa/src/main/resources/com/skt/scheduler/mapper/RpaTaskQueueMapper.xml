@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skt.scheduler.mapper.RpaTaskQueueMapper">
+
+    <!-- 실행 큐에 INSERT -->
+    <insert id="insertTaskQueue" parameterType="com.skt.scheduler.model.entity.RpaTaskQueue">
+        <![CDATA[
+        INSERT INTO rpa.rpa_task_queue (
+            action_id,
+            scheduled_time,
+            status,
+            frst_reg_date,
+            chg_reg_date
+        ) VALUES (
+            #{actionId},
+            #{scheduledTime},
+            'READY',
+            now(),
+            now()
+        )
+        ]]>
+    </insert>
+
+    <!-- 중복된 task 있는지 확인 -->
+    <select id="existsTask" resultType="boolean">
+        <![CDATA[
+        SELECT EXISTS (
+            SELECT 1 FROM rpa.rpa_task_queue
+            WHERE action_id = #{actionId}
+              AND scheduled_time = #{scheduledTime}
+        )
+        ]]>
+    </select>
+
+    <!-- 현재 기준으로 scheduled_time >= now 인 최신 1건만 실행 -->
+    <select id="getLatestReadyTasks" resultType="com.skt.scheduler.model.entity.RpaTaskQueue">
+    <![CDATA[
+    SELECT t.*, a.status as action_status FROM rpa.rpa_task_queue t, rpa.rpa_action a
+    WHERE 
+    	  t.action_id = a.id
+   	  AND t.status = 'READY'
+      AND t.scheduled_time <= #{now}
+      AND NOT EXISTS (
+          SELECT 1 FROM rpa.rpa_task_queue t2
+          WHERE t2.action_id = t.action_id
+            AND t2.status = 'READY'
+            AND t2.scheduled_time <= #{now}
+            AND t2.scheduled_time > t.scheduled_time
+      )
+    ]]>
+</select>
+
+    <!-- 실행 성공 처리 -->
+    <update id="updateStatusSuccess">
+        <![CDATA[
+        UPDATE rpa.rpa_task_queue
+        SET status = 'SUCCESS',
+            result = #{result},
+            started_at = #{startedAt},
+            finished_at = now(),
+            chg_reg_date = now()
+        WHERE id = #{id}
+        ]]>
+    </update>
+
+    <!-- 실행 실패 처리 -->
+    <update id="updateStatusFailed">
+        <![CDATA[
+        UPDATE rpa.rpa_task_queue
+        SET status = 'FAILED',
+            result = #{result},
+            started_at = #{startedAt},
+            finished_at = now(),
+            chg_reg_date = now()
+        WHERE id = #{id}
+        ]]>
+    </update>
+
+    <!-- 현재 실행 시점보다 이전인 READY 작업 SKIPPED 처리 -->
+    <update id="skipPreviousTasks">
+        <![CDATA[
+        UPDATE rpa.rpa_task_queue
+        SET status = 'SKIPPED',
+            chg_reg_date = now()
+        WHERE action_id = #{actionId}
+          AND status = 'READY'
+          AND scheduled_time < #{currentExecutionTime}
+        ]]>
+    </update>
+    
+    <update id="updateStatusRunning">
+	    <![CDATA[
+	    UPDATE rpa.rpa_task_queue
+	    SET status = 'RUNNING',
+	        started_at = now(),
+	        chg_reg_date = now()
+	    WHERE id = #{id}
+	    ]]>
+	</update>
+	
+	<update id="updateStatusEnactive">
+	    <![CDATA[
+	    UPDATE rpa.rpa_task_queue
+	    SET status = 'ENACTIVE',
+	        started_at = now(),
+	        chg_reg_date = now()
+	    WHERE id = #{id}
+	    ]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,59 @@
+.ant-select-arrow {
+  margin-right: 15px !important;
+  color: #414651 !important;
+  font-weight: 600 !important;
+}
+
+.ant-select-clear {
+  z-index: 2;
+}
+
+.custom-selected-row,
+.custom-selected-row:hover,
+.custom-selected-row > .ant-table-cell,
+.custom-selected-row:hover > .ant-table-cell {
+  background-color:#F3F2FD!important;
+}
+
+.ant-table .editable-cell {
+  padding: 0 !important;
+  height: 90%;
+}
+
+.ant-table .editable-cell .ant-form-item {
+  margin: 0;
+  height: 90%;
+}
+
+.custom-row {
+  height: 77px !important;
+}
+
+
+.edited-row {
+  background-color: #fffbe6 !important;
+}
+
+.new-row {
+  background-color: #afe0b7 !important;
+}
+
+.action-select .ant-select-selection-placeholder {
+  color: #414651 !important;
+  font-weight: 600 !important;
+}
+
+.ant-pagination-options .ant-select-arrow {
+  right: 4px !important;
+  margin-left: 8px;
+}
+
+.ant-pagination-options .ant-select-selection-item {
+  padding-right: 28px !important;
+}
+
+.email-cell {
+  white-space: normal;
+  word-break: break-all;
+  width: 100%;
+}

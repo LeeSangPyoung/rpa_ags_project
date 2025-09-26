@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skt.business.mapper.ActionInstanceMapper">
+
+	<!-- Insert 문 -->
+    <insert id="insert" parameterType="com.skt.business.model.entity.ActionInstance" useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO rpa_action_instance (
+	        rpa_action_id,
+	        status,
+	        start_time,
+	        end_time,
+	        triggered_by,
+	        frst_reg_user_id,
+	        frst_reg_date,
+	        chg_reg_user_id,
+	        chg_reg_date
+	    ) VALUES (
+	        #{rpaActionId},
+	        #{status},
+	        #{startTime},
+	        #{endTime},
+	        #{triggeredBy},
+	        'SYSTEM',
+	        now(),
+	        'SYSTEM',
+	        now()
+	    )
+	</insert>
+
+    <!-- Update 문 -->
+	<update id="updateActionInstance" parameterType="com.skt.business.model.entity.ActionInstance">
+	    UPDATE rpa_action_instance
+	    SET
+	        status = #{status},
+	        end_time = #{endTime},
+	        chg_reg_user_id = #{chgRegUserId},
+	        chg_reg_date = now()
+	    WHERE id = #{id}
+	</update>
+	
+</mapper>

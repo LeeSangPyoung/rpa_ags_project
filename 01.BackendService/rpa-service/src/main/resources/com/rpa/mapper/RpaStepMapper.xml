@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaStepMapper">
+    <select id="getStepCbx" resultMap="RpaComboboxResultMap.RpaCombobox">
+        SELECT A.ID AS VALUE,
+        	A.NAME AS LABEL
+        FROM RPA_STEP A
+        INNER JOIN RPA_ACTION B
+        ON B.ID = A.RPA_ACTION_ID
+        <where>
+            <if test='rpaActionId != null'>
+                B.ID = #{rpaActionId}
+            </if>
+        </where>
+    </select>
+
+    <select id="countStepById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_STEP WHERE id = #{id}
+    </select>
+
+    <select id="getStepPage" resultMap="RpaStepResultMap.RpaStep">
+		<include refid="getStepListSql"></include>
+        ORDER BY ID
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getStepListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getStepListSql"></include>
+        ) A
+    </select>
+
+    <select id="getStepById" resultMap="RpaStepResultMap.RpaStep">
+        <include refid="getStepFullInfo"></include>
+        WHERE A.ID = #{id}
+    </select>
+
+    <sql id="getStepFullInfo">
+        SELECT
+            A.ID,
+            A.RPA_ACTION_ID,
+            B.NAME AS RPA_ACTION_NAME,
+            A.STEP_ORDER,
+            A.RPA_TYPE,
+            A.SCRIPT_PATH,
+            A.SCRIPT_FILE,
+            A.ACCOUNT_GROUP_ID,
+            C.GROUP_NAME,
+            A.REPEAT_PER_ACCOUNT,
+            A.TARGET_FILE_PATH,
+            A.DOWNLOAD_PATH,
+            A.PARALLEL_EXECUTION,
+            A.DESCRIPTION,
+            A.NAME,
+            A.FRST_REG_USER_ID,
+            TO_CHAR(A.FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            A.CHG_REG_USER_ID,
+        TO_CHAR(A.CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_STEP A
+        INNER JOIN RPA_ACTION B
+        ON B.ID = A.RPA_ACTION_ID
+        LEFT OUTER JOIN RPA_ACCOUNT_GROUP C
+        ON C.ID = A.ACCOUNT_GROUP_ID
+    </sql>
+
+    <sql id="getStepListSql">
+		<include refid="getStepFullInfo"></include>
+        <where>
+            <if test='id != null'>
+            	AND A.ID = #{id}
+            </if>
+            <if test='rpaActionId != null and rpaActionId != ""'>
+                AND A.RPA_ACTION_ID = #{rpaActionId}
+            </if>
+            <if test='stepOrder != null and stepOrder != ""'>
+                AND A.STEP_ORDER = #{stepOrder}
+            </if>
+            <if test='rpaType != null and rpaType != ""'>
+                AND A.RPA_TYPE = #{rpaType}
+            </if>
+            <if test='scriptPath != null and scriptPath != ""'>
+                AND A.SCRIPT_PATH = #{scriptPath}
+            </if>
+            <if test='scriptFile != null and scriptFile != ""'>
+                AND A.SCRIPT_FILE = #{scriptFile}
+            </if>
+            <if test='accountGroupId != null'>
+                AND A.ACCOUNT_GROUP_ID = #{accountGroupId}
+            </if>
+            <if test='repeatPerAccount != null'>
+                AND A.REPEAT_PER_ACCOUNT = #{repeatPerAccount}
+            </if>
+            <if test='targetFilePath != null and targetFilePath != ""'>
+                AND A.TARGET_FILE_PATH = #{targetFilePath}
+            </if>
+            <if test='downloadPath != null and downloadPath != ""'>
+                AND A.DOWNLOAD_PATH = #{downloadPath}
+            </if>
+            <if test='parallelExecution != null'>
+                AND A.PARALLEL_EXECUTION = #{parallelExecution}
+            </if>
+            <if test='description != null and description != ""'>
+                AND A.DESCRIPTION = #{description}
+            </if>
+            <if test='name != null and name != ""'>
+                AND A.NAME = #{name}
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND A.FRST_REG_USER_ID = #{frstRegUserId}
+            </if>
+            <if test='frstRegDate != null and frstRegDate != ""'>
+                AND date_trunc('day', A.FRST_REG_DATE) = #{frstRegDate}::timestamp
+            </if>
+            <if test='chgRegUserId != null and chgRegUserId != ""'>
+                AND A.CHG_REG_USER_ID = #{chgRegUserId}
+            </if>
+            <if test='chgRegDate != null and chgRegDate != ""'>
+                AND date_trunc('day', A.CHG_REG_DATE) = #{chgRegDate}::timestamp
+            </if>
+        </where>
+    </sql>
+    
+    <insert id="insertRpaStep">
+        INSERT INTO RPA_STEP
+            (RPA_ACTION_ID,
+            STEP_ORDER,
+            RPA_TYPE,
+            SCRIPT_PATH,
+            SCRIPT_FILE,
+            ACCOUNT_GROUP_ID,
+            REPEAT_PER_ACCOUNT,
+            TARGET_FILE_PATH,
+            DOWNLOAD_PATH,
+            PARALLEL_EXECUTION,
+            DESCRIPTION,
+            NAME,
+            FRST_REG_USER_ID,
+            FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            CHG_REG_DATE)
+        VALUES
+            (#{rpaActionId},
+            #{stepOrder},
+            #{rpaType},
+            #{scriptPath},
+            #{scriptFile},
+            #{accountGroupId},
+            #{repeatPerAccount},
+            #{targetFilePath},
+            #{downloadPath},
+            #{parallelExecution},
+            #{description},
+            #{name},
+            #{frstRegUserId},
+            NOW(),
+            #{chgRegUserId},
+            #{chgRegDate}::timestamp)
+    </insert>
+
+    <update id="updateRpaStep">
+        UPDATE RPA_STEP SET
+        <if test='rpaActionId != null'>
+            RPA_ACTION_ID = #{rpaActionId},
+        </if>
+        <if test='stepOrder != null'>
+            STEP_ORDER = #{stepOrder},
+        </if>
+        <if test='rpaType != null'>
+            RPA_TYPE = #{rpaType},
+        </if>
+        <if test='scriptPath != null'>
+            SCRIPT_PATH = #{scriptPath},
+        </if>
+        <if test='scriptFile != null'>
+            SCRIPT_FILE = #{scriptFile},
+        </if>
+        <if test='accountGroupId != null'>
+            ACCOUNT_GROUP_ID = #{accountGroupId},
+        </if>
+        <if test='repeatPerAccount != null'>
+            REPEAT_PER_ACCOUNT = #{repeatPerAccount},
+        </if>
+        <if test='targetFilePath != null'>
+            TARGET_FILE_PATH = #{targetFilePath},
+        </if>
+        <if test='downloadPath != null'>
+            DOWNLOAD_PATH = #{downloadPath},
+        </if>
+        <if test='parallelExecution != null'>
+            PARALLEL_EXECUTION = #{parallelExecution},
+        </if>
+        <if test='description != null'>
+            DESCRIPTION = #{description},
+        </if>
+        <if test='name != null'>
+            NAME = #{name},
+        </if>
+        <if test='frstRegUserId != null'>
+            FRST_REG_USER_ID = #{frstRegUserId},
+        </if>
+        <if test='chgRegUserId != null'>
+            CHG_REG_USER_ID = #{chgRegUserId},
+        </if>
+            CHG_REG_DATE = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteRpaStep">
+        DELETE FROM RPA_STEP
+        WHERE  ID = #{id}
+    </delete>
+
+    <delete id="deleteRpaStepList">
+        DELETE FROM RPA_STEP
+        <where>
+            ID IN (
+            <foreach collection="idList" item="id"  separator="," >
+                #{id}
+            </foreach>
+            )
+        </where>
+    </delete>
+
+</mapper>

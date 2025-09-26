@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaRoleMapper">
+    <select id="getRoleCbx" resultMap="RpaComboboxResultMap.RpaCombobox">
+        SELECT ID  AS VALUE,
+            ROLE_NAME AS LABEL
+        FROM RPA_ROLE
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "RpaUserResultMap">
+    <resultMap id="RpaUser" type="com.rpa.model.dto.RpaUserDto">
+        <result column = "id" jdbcType = "INTEGER" property = "id" />
+        <result column = "user_id" jdbcType = "VARCHAR" property = "userId" />
+        <result column = "user_name" jdbcType = "VARCHAR" property = "userName" />
+        <result column = "password" jdbcType = "VARCHAR" property = "password" />
+        <result column = "email" jdbcType = "VARCHAR" property = "email" typeHandler="com.rpa.config.EncryptedTypeHandler"/>
+        <result column = "phone_number" jdbcType = "VARCHAR" property = "phoneNumber" typeHandler="com.rpa.config.EncryptedTypeHandler" />
+        <result column = "status_id" jdbcType = "INTEGER" property = "statusId" />
+        <result column = "status" jdbcType = "VARCHAR" property = "status" />
+        <result column = "role_id" jdbcType = "INTEGER" property = "roleId" />
+        <result column = "role_name" jdbcType = "VARCHAR" property = "roleName" />
+        <result column = "must_change_pw" jdbcType = "INTEGER" property = "mustChangePw" />
+        <result column = "lock_count" jdbcType = "INTEGER" property = "lockCount" />
+        <result column = "created_at" jdbcType = "VARCHAR" property = "createdAt" />
+        <result column = "updated_at" jdbcType = "VARCHAR" property = "updatedAt" />
+        <result column = "last_change_pass_at" jdbcType = "VARCHAR" property = "lastChangePassAt" />
+        <result column = "approve_date" jdbcType = "VARCHAR" property = "approveDate" />
+        <result column = "approve_user_id" jdbcType = "VARCHAR" property = "approveUserId" />
+    </resultMap>
+</mapper>

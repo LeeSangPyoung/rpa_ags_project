@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaActionMapper">
+    <select id="getActionCbx" resultMap="RpaComboboxResultMap.RpaCombobox">
+        SELECT ID AS VALUE,
+        NAME AS LABEL
+        FROM RPA_ACTION
+    </select>
+
+    <select id="countActionById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_ACTION WHERE id = #{id}
+    </select>
+
+    <select id="getActionPage" resultMap="RpaActionResultMap.RpaAction">
+		<include refid="getActionListSql"></include>
+        ORDER BY ID
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getActionListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        	<include refid="getActionListSql"></include>
+        ) A
+    </select>
+
+    <select id="getActionById" resultMap="RpaActionResultMap.RpaAction">
+        <include refid="getActionFullInfo"></include>
+        WHERE ID = #{id}
+    </select>
+
+    <sql id = "getActionFullInfo">
+        SELECT
+            ID,
+            NAME,
+            DESCRIPTION,
+            CRON_EXPRESSION,
+            TO_CHAR(NEXT_RUN_TIME, 'YYYY-MM-DD HH24:MI:SS') AS NEXT_RUN_TIME,
+            STATUS,
+            REPEATABLE,
+            TO_CHAR(START_DATE, 'YYYY-MM-DD HH24:MI:SS') AS START_DATE,
+            TO_CHAR(END_DATE, 'YYYY-MM-DD HH24:MI:SS') AS END_DATE,
+            COMMENTS,
+            FRST_REG_USER_ID,
+            TO_CHAR(FRST_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            TO_CHAR(CHG_REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHG_REG_DATE
+        FROM RPA_ACTION
+    </sql>
+
+    <sql id="getActionListSql">
+        <include refid="getActionFullInfo"></include>
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND (NAME LIKE '%' || #{keyword} || '%'
+                OR FRST_REG_USER_ID LIKE '%' || #{keyword} || '%'
+                )
+            </if>
+            <if test='name != null and name != ""'>
+                AND NAME LIKE '%' || #{name} || '%'
+            </if>
+            <if test='status != null and status != ""'>
+                AND STATUS = #{status}
+            </if>
+            <if test='startDateFrom != null and startDateFrom != ""'>
+                <![CDATA[
+                	AND date_trunc('day', START_DATE) >= #{startDateFrom}::timestamp
+                ]]>
+            </if>
+            <if test='startDateTo != null and startDateTo != ""'>
+                <![CDATA[
+                	AND date_trunc('day', START_DATE) <= #{startDateTo}::timestamp
+                ]]>
+            </if>
+            <if test='endDateFrom != null and endDateFrom != ""'>
+                <![CDATA[
+                	AND date_trunc('day', END_DATE) >= #{endDateFrom}::timestamp
+                ]]>
+            </if>
+            <if test='endDateTo != null and endDateTo != ""'>
+                <![CDATA[
+                	AND date_trunc('day', END_DATE) <= #{endDateTo}::timestamp
+                ]]>
+            </if>
+            <if test='frstRegUserId != null and frstRegUserId != ""'>
+                AND FRST_REG_USER_ID LIKE '%' || #{frstRegUserId} || '%'
+            </if>
+            <if test='repeatable != null'>
+                AND REPEATABLE = #{repeatable}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insertRpaAction">
+        INSERT INTO RPA_ACTION(
+            NAME,
+            DESCRIPTION,
+            CRON_EXPRESSION,
+            NEXT_RUN_TIME,
+            STATUS,
+            REPEATABLE,
+            START_DATE,
+            END_DATE,
+            COMMENTS,
+            FRST_REG_USER_ID,
+            FRST_REG_DATE,
+            CHG_REG_USER_ID,
+            CHG_REG_DATE)
+        VALUES (
+            #{name},
+            #{description},
+            #{cronExpression},
+            #{nextRunTime}::timestamp,
+            #{status},
+            #{repeatable},
+            #{startDate}::timestamp,
+            #{endDate}::timestamp,
+            #{comments},
+            #{frstRegUserId},
+            NOW(),
+            #{chgRegUserId},
+            #{chgRegDate}::timestamp
+        );
+    </insert>
+
+    <update id="updateRpaAction">
+        UPDATE RPA_ACTION
+        SET
+        <if test='name != null'>
+            NAME = #{name},
+        </if>
+        <if test='description != null'>
+            DESCRIPTION = #{description},
+        </if>
+        <if test='cronExpression != null'>
+            CRON_EXPRESSION = #{cronExpression},
+        </if>
+        <if test='nextRunTime != null'>
+            NEXT_RUN_TIME = #{nextRunTime}::timestamp,
+        </if>
+        <if test='status != null'>
+            STATUS =  #{status},
+        </if>
+        <if test='repeatable != null'>
+            REPEATABLE =  #{repeatable},
+        </if>
+        <if test='startDate != null'>
+            START_DATE =  #{startDate}::timestamp,
+        </if>
+        <if test='endDate != null'>
+            END_DATE =  #{endDate}::timestamp,
+        </if>
+        <if test='comments != null'>
+            COMMENTS =  #{comments},
+        </if>
+        <if test='chgRegUserId != null'>
+            CHG_REG_USER_ID =  #{chgRegUserId},
+        </if>
+        <if test='chgRegDate != null'>
+            CHG_REG_DATE =  #{chgRegDate},
+        </if>
+        	CHG_REG_DATE = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteRpaAction">
+        DELETE FROM RPA_ACTION
+        WHERE  ID = #{id}
+    </delete>
+
+    <delete id="deleteRpaActionList">
+        DELETE FROM RPA_ACTION
+        <where>
+            ID IN (
+            <foreach collection="idList" item="id"  separator="," >
+                #{id}
+            </foreach>
+            )
+        </where>
+    </delete>
+</mapper>

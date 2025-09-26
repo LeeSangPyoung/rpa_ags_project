@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skt.business.mapper.StepParamOutMapper">
+
+    <insert id="insertStepParamOut" parameterType="com.skt.business.model.entity.StepParamOut">
+        INSERT INTO rpa.rpa_step_param_out (
+            step_execution_id,
+            param_key,
+            param_value,
+            frst_reg_date,
+            frst_reg_user_id,
+            chg_reg_date,
+            chg_reg_user_id
+        ) VALUES (
+            #{stepExecutionId},
+            #{paramKey},
+            #{paramValue},
+            now(),
+            'SYSTEM',
+            now(),
+            'SYSTEM'
+        )
+    </insert>
+    <select id="selectParamOutByPrevStep"
+         parameterType="long"
+         resultType="com.skt.business.model.entity.StepParamOutResult">
+		
+		SELECT 
+		    o.step_execution_id,
+		    e.account_id,
+		    a_login.value AS login_id,
+		    o.param_key,
+		    o.param_value
+		FROM 
+		    rpa_step_param_out o
+		JOIN 
+		    rpa_step_execution e ON o.step_execution_id = e.id
+		JOIN 
+		    rpa_step_instance si ON e.rpa_step_instance_id = si.id
+		JOIN 
+		    rpa_step s ON si.rpa_step_id = s.id
+		JOIN 
+		    rpa_account a_login ON e.account_id::bigint = a_login.account_no 
+		                       AND a_login.key = 'login_id' 
+		                       AND a_login.account_group_id = s.account_group_id
+		WHERE 
+		    e.rpa_step_instance_id = #{stepInstanceId}
+		ORDER BY 
+		    step_execution_id, param_key;
+ 	</select>
+    
+    
+    
+
+</mapper>

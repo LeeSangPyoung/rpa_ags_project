@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    
+}
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+
+.background-layout {
+    background-image: radial-gradient(ellipse at bottom left, #152475 0%, #5046E4 50%, #DAD8F7 100%);
+}
+
+:where(.ant-table-thead > tr > th) {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+:where(.ant-table-tbody > tr > td) {
+    border-inline-end: none !important;
+}
+
+:where(.ant-modal .ant-modal-footer) {
+    margin-top: 0 !important;
+}

@@ -1,0 +1,15 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "RpaAccountResultMap">
+    <resultMap id="RpaAccount" type="com.rpa.model.dto.RpaAccountDto">
+        <result column = "account_group_id" jdbcType = "INTEGER" property = "accountGroupId" />
+        <result column = "group_name" jdbcType = "VARCHAR" property = "groupName" />
+        <result column = "account_no" jdbcType = "INTEGER" property = "accountNo" />
+        <result column = "key" jdbcType = "VARCHAR" property = "accountKey" />
+        <result column = "value" jdbcType = "VARCHAR" property = "value" />
+        <result column = "frst_reg_user_id" jdbcType = "VARCHAR" property = "frstRegUserId" />
+        <result column = "frst_reg_date" jdbcType = "VARCHAR" property = "frstRegDate" />
+        <result column = "chg_reg_user_id" jdbcType = "VARCHAR" property = "chgRegUserId" />
+        <result column = "chg_reg_date" jdbcType = "VARCHAR" property = "chgRegDate" />
+    </resultMap>
+</mapper>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rpa.mapper.RpaUserMapper">
+    <select id="getUser" resultMap="RpaUserResultMap.RpaUser">
+        SELECT
+            A.ID,
+            A.USER_ID,
+            A.PASSWORD
+        FROM RPA_USER A
+        WHERE A.USER_ID = #{userId}
+        <if test='statusId != null'>
+            AND A.STATUS_ID = #{statusId}
+        </if>
+    </select>
+
+    <select id="getUserFullInfo" resultMap="RpaUserResultMap.RpaUser">
+        SELECT
+            A.ID,
+            A.USER_ID,
+            A.PASSWORD,
+            A.USER_NAME,
+            A.EMAIL,
+            A.PHONE_NUMBER,
+            A.STATUS_ID,
+            C.STATUS,
+            A.MUST_CHANGE_PW,
+            A.ROLE_ID,
+            B.ROLE_NAME,
+            A.LOCK_COUNT,
+            TO_CHAR(A.CREATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS CREATED_AT,
+            TO_CHAR(A.UPDATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS UPDATED_AT,
+            A.LAST_CHANGE_PASS_AT,
+            TO_CHAR(A.APPROVE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPROVE_DATE,
+            A.APPROVE_USER_ID
+        FROM RPA_USER A
+        INNER JOIN RPA_ROLE B
+        ON B.ID = A.ROLE_ID
+        INNER JOIN RPA_STATUS C
+        ON C.STATUS_ID = A.STATUS_ID
+        WHERE A.USER_ID = #{userId}
+        <if test='statusId != null'>
+            AND A.STATUS_ID = #{statusId}
+        </if>
+    </select>
+
+    <select id="getUserPage" resultMap="RpaUserResultMap.RpaUser">
+        <include refid="getUserListSql"></include>
+        ORDER BY A.USER_ID
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="getUserListCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM (
+        <include refid="getUserListSql"></include>
+        ) A
+    </select>
+
+    <select id="countUserByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM RPA_USER WHERE USER_ID = #{userId}
+    </select>
+
+    <update id="updateRpaUser">
+        UPDATE RPA_USER
+        <set>
+            <if test='password != null and password != ""'>
+                , PASSWORD = #{password}
+            </if>
+            <if test='userName != null'>
+                , USER_NAME = #{userName}
+            </if>
+            <if test='email != null and email != ""'>
+                , EMAIL = #{email, typeHandler=com.rpa.config.EncryptedTypeHandler}
+            </if>
+            <if test='phoneNumber != null and phoneNumber != ""'>
+                , PHONE_NUMBER = #{phoneNumber, typeHandler=com.rpa.config.EncryptedTypeHandler}
+            </if>
+            <if test='statusId != null'>
+                , STATUS_ID = #{statusId}
+            </if>
+            <if test='mustChangePw != null'>
+                , MUST_CHANGE_PW = #{mustChangePw}
+            </if>
+            <if test='roleId != null'>
+                , ROLE_ID = #{roleId}
+            </if>
+            <if test='lockCount != null'>
+                , LOCK_COUNT = #{lockCount}
+            </if>
+            <if test='lastChangePassAt != null and lastChangePassAt !=""'>
+                , LAST_CHANGE_PASS_AT = #{lastChangePassAt}::timestamp
+            </if>
+                , UPDATED_AT = NOW()
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <update id ="updateStatus">
+        UPDATE RPA_USER
+        SET STATUS_ID = #{statusId}
+        	, UPDATED_AT = NOW()
+        <where>
+            <foreach collection="userIdList" item="element" index="index" separator="OR">
+				USER_ID = #{element}
+            </foreach>
+        </where>
+    </update>
+
+    <update id ="unlockRpaUser">
+        UPDATE RPA_USER
+        SET STATUS_ID = 1
+        , LOCK_COUNT = 0
+        , UPDATED_AT = NOW()
+        <where>
+            <foreach collection="userIdList" item="element" index="index" separator="OR">
+                USER_ID = #{element}
+            </foreach>
+        </where>
+    </update>
+
+    <update id ="approveRpaUser">
+        UPDATE RPA_USER
+        SET STATUS_ID = 1
+        , APPROVE_USER_ID = #{approveUserId}
+        , APPROVE_DATE = NOW()
+        , UPDATED_AT = NOW()
+        <where>
+            <foreach collection="userIdList" item="element" index="index" separator="OR">
+                USER_ID = #{element}
+            </foreach>
+        </where>
+    </update>
+
+    <insert id="insertRpaUser">
+        INSERT INTO RPA_USER
+        (
+            USER_ID,
+            PASSWORD,
+        	USER_NAME,
+            EMAIL,
+            PHONE_NUMBER,
+        <if test='statusId != null'>
+            STATUS_ID,
+        </if>
+        <if test='mustChangePw != null'>
+            MUST_CHANGE_PW,
+        </if>
+            ROLE_ID,
+        	APPROVE_USER_ID,
+            CREATED_AT
+        )
+        VALUES (
+            #{userId},
+            #{password},
+        	#{userName},
+            #{email, typeHandler=com.rpa.config.EncryptedTypeHandler},
+            #{phoneNumber, typeHandler=com.rpa.config.EncryptedTypeHandler},
+        <if test='statusId != null'>
+            #{statusId},
+        </if>
+        <if test='mustChangePw != null'>
+            #{mustChangePw},
+        </if>
+            #{roleId},
+        	#{approveUserId},
+        	NOW()
+        )
+    </insert>
+
+	<delete id="deleteRpaUser">
+        DELETE FROM RPA_USER
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <delete id="deleteRpaUserList">
+        DELETE FROM RPA_USER
+        <where>
+            <foreach collection="userIdList" item="element" index="index" separator="OR">
+                USER_ID = #{element}
+            </foreach>
+        </where>
+    </delete>
+
+    <sql id="getUserListSql">
+        SELECT
+            A.ID,
+            A.USER_ID,
+            A.PASSWORD,
+            A.USER_NAME,
+            A.EMAIL,
+            A.PHONE_NUMBER,
+            A.STATUS_ID,
+            C.STATUS,
+            A.MUST_CHANGE_PW,
+            A.ROLE_ID,
+            B.ROLE_NAME,
+            A.LOCK_COUNT,
+            TO_CHAR(A.CREATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS CREATED_AT,
+            TO_CHAR(A.UPDATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS UPDATED_AT,
+            A.LAST_CHANGE_PASS_AT,
+        	TO_CHAR(A.APPROVE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPROVE_DATE,
+        	A.APPROVE_USER_ID
+            FROM RPA_USER A
+            INNER JOIN RPA_ROLE B
+            ON B.ID = A.ROLE_ID
+            INNER JOIN RPA_STATUS C
+            ON C.STATUS_ID = A.STATUS_ID
+        <where>
+            <if test='keyword != null and keyword != ""'>
+                AND (A.USER_ID LIKE '%' || #{keyword} || '%'
+                	OR A.USER_NAME LIKE '%' || #{keyword} || '%'
+                    OR A.EMAIL LIKE '%' || #{keyword} || '%'
+                    OR A.PHONE_NUMBER LIKE '%' || #{keyword} || '%'
+                )
+            </if>
+            <if test='roleId != null'>
+                AND A.ROLE_ID = #{roleId}
+            </if>
+            <if test="statusIdList != null and statusIdList.size() > 0">
+                AND A.STATUS_ID IN
+                <foreach collection="statusIdList"  item="item" open="("  separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test='createdAt != null and createdAt != ""'>
+                AND date_trunc('day', A.CREATED_AT) = #{createdAt}::timestamp
+            </if>
+            <if test='approveDate != null and approveDate != ""'>
+                AND date_trunc('day', A.APPROVE_DATE) = #{approveDate}::timestamp
+            </if>
+        </where>
+    </sql>
+</mapper>
