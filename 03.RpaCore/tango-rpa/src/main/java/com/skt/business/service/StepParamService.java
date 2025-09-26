@@ -17,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.skt.business.mapper.AccountMapper;
+import com.skt.business.mapper.StepParamInMapper;
 import com.skt.business.mapper.StepParamOutMapper;
 import com.skt.business.mapper.StepParamTemplateMapper;
 import com.skt.business.model.entity.Account;
 import com.skt.business.model.entity.AccountScriptRslt;
 import com.skt.business.model.entity.Step;
 import com.skt.business.model.entity.StepParamOutResult;
+import com.skt.business.model.entity.StepParamIn;
 import com.skt.business.model.entity.StepParamTemplate;
 import com.skt.common.config.CommonSettingProperties;
 import com.skt.encryption.config.SecretKeyProvider;
@@ -39,6 +41,7 @@ public class StepParamService {
     private final StepParamTemplateMapper stepParamMapper;
     private final AccountMapper accountMapper;
     private final StepParamOutMapper stepParamOutMapper;
+    private final StepParamInMapper stepParamInMapper;
     private final SecretKeyProvider secretKeyProvider;
     
 
@@ -51,7 +54,7 @@ public class StepParamService {
     	return outList;
     }
 
-    public void processParamsAndSaveToTemp(Step stepAction) {
+    public void processParamsAndSaveToTemp(Step stepAction, Long stepExecutionId) {
     	String playwrightScriptDir = props.getExecutor().getPlaywrightScriptDir();
     	String playwrightTargetDir = props.getExecutor().getPlaywrightTargetDir();
         List<StepParamTemplate> params = stepParamMapper.selectParamTemplateByStepId(stepAction.getStepId());
@@ -163,6 +166,17 @@ public class StepParamService {
                         value = accountMap.getOrDefault(param.getParamKey(), param.getParamValueTemplate());
                         
                         contentCopy = contentCopy.replace(token, value != null ? value : "");
+                        
+                        // rpa_step_param_in 테이블에 저장 (stepExecutionId가 있을 때만)
+                        if (stepExecutionId != null) {
+                            StepParamIn stepParamIn = new StepParamIn();
+                            stepParamIn.setStepExecutionId(stepExecutionId);
+                            stepParamIn.setParamKey(param.getParamKey());
+                            stepParamIn.setParamValue(value);
+                            stepParamIn.setParamValueDefault(value);  // 동일한 값
+                            stepParamIn.setDynamic(false);            // false로 고정
+                            stepParamInMapper.insertStepParamIn(stepParamIn);
+                        }
                     }
                     
  
@@ -186,6 +200,17 @@ public class StepParamService {
                     String value = param.getParamValueTemplate() != null ? param.getParamValueTemplate() : "";
                     log.info("🔁 치환 토큰: {} → {}", token, value);
                     scriptContent = scriptContent.replace(token, value);
+                    
+                    // rpa_step_param_in 테이블에 저장 (stepExecutionId가 있을 때만)
+                    if (stepExecutionId != null) {
+                        StepParamIn stepParamIn = new StepParamIn();
+                        stepParamIn.setStepExecutionId(stepExecutionId);
+                        stepParamIn.setParamKey(param.getParamKey());
+                        stepParamIn.setParamValue(value);
+                        stepParamIn.setParamValueDefault(value);  // 동일한 값
+                        stepParamIn.setDynamic(false);            // false로 고정
+                        stepParamInMapper.insertStepParamIn(stepParamIn);
+                    }
                 }
 
                 Files.createDirectories(versionedDir);

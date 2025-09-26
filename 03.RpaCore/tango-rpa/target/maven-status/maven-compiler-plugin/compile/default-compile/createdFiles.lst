@@ -40,12 +40,14 @@ com\skt\scheduler\mapper\RpaSchedulerMapper.class
 com\skt\business\model\entity\StepExecution.class
 com\skt\business\model\entity\Step.class
 com\skt\business\model\entity\StepParamTemplate.class
+com\skt\business\mapper\StepParamInMapper.class
 com\skt\business\model\entity\Action.class
 com\skt\core\log\mapper\RpaExecutionLogMapper.class
 com\skt\business\TangoRpaApplication.class
 com\skt\scheduler\mapper\RpaTaskQueueMapper.class
 com\skt\core\executor\TaguiExecutor.class
 com\skt\business\mapper\StepInstanceMapper.class
+com\skt\business\model\entity\StepParamIn.class
 com\skt\encryption\controller\EncryptionController.class
 com\skt\core\model\RpaRequest.class
 com\skt\business\service\StepActionService.class

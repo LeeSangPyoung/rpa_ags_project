@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.skt.business.log.service.StepActionLogService;
+import com.skt.business.mapper.StepExecutionMapper;
 import com.skt.business.mapper.StepMapper;
 import com.skt.business.model.dto.Action;
 import com.skt.business.model.entity.AccountScriptRslt;
 import com.skt.business.model.entity.ActionInstance;
 import com.skt.business.model.entity.Step;
+import com.skt.business.model.entity.StepExecution;
 import com.skt.business.model.entity.StepInstance;
 import com.skt.business.model.entity.StepParamOutResult;
 import com.skt.core.executor.model.dto.RpaExecutionResult;
@@ -43,6 +45,7 @@ public class StepActionService {
     private final RpaService rpaService;
     private final StepActionLogService stepActionLogService;
     private final StepInstanceService stepInstanceService;
+    private final StepExecutionMapper stepExecutionMapper;
     
     private final ActionInstanceService actionInstanceService;
     
@@ -170,7 +173,7 @@ public class StepActionService {
             log.info("LSP outList : {}", outList.toString());
             log.info(actionRslt);
             log.info("SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-            stepParamService.processParamsAndSaveToTemp(stepAction);
+            stepParamService.processParamsAndSaveToTemp(stepAction, null);
 
             // StepAction 실행 상태 "RUNNING"으로 로그 기록
             // long stepActionLogId = stepActionLogService.insertRunningLog(stepAction.getStepId(), "Step execution started.");
@@ -203,6 +206,14 @@ public class StepActionService {
             // RPA 요청 생성
             log.info("accountScriptRslts.size() : {}, accountScriptRslts.toString() : {}", accountScriptRslts.size(), accountScriptRslts.toString());
             for (AccountScriptRslt accountScriptRslt : accountScriptRslts) {
+                // StepExecution 생성
+                StepExecution stepExecution = new StepExecution();
+                stepExecution.setRpaStepInstanceId(stepInstance.getId());
+                stepExecution.setAccountId(accountScriptRslt.getAccountId());
+                stepExecution.setStatus("READY");
+                stepExecution.setStartTime(LocalDateTime.now());
+                stepExecutionMapper.insertStepExecution(stepExecution);
+                
                 RpaRequest rpaRequest = new RpaRequest();
                 rpaRequest.setType(stepAction.getRpaType().toLowerCase());
                 rpaRequest.setFilename(stepAction.getScriptFile());
@@ -212,6 +223,7 @@ public class StepActionService {
                 // rpaRequest.setStepActionLogId(stepActionLogId);
                 rpaRequest.setAccountId(accountScriptRslt.getAccountId());
                 rpaRequest.setRpaStepInstanceId(stepInstance.getId());
+                rpaRequest.setStepExecutionId(stepExecution.getId());  // StepExecution ID 설정
                 rpaRequest.setStepParamOutResults(outList);
                 rpaRequests.add(rpaRequest);
             }

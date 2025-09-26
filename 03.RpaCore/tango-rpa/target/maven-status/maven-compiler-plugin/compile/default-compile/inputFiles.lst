@@ -7,6 +7,7 @@ D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\s
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepExecutionMapper.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepInstanceMapper.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepMapper.java
+D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepParamInMapper.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepParamOutMapper.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\mapper\StepParamTemplateMapper.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\dto\Action.java
@@ -18,6 +19,7 @@ D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\s
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepExecution.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepInstance.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepParam.java
+D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepParamIn.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepParamOut.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepParamOutResult.java
 D:\rpa_project_ags\RPA_Release_20250924\03.RpaCore\tango-rpa\src\main\java\com\skt\business\model\entity\StepParamTemplate.java

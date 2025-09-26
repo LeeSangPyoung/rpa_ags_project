@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skt.business.mapper.StepParamInMapper">
+
+    <insert id="insertStepParamIn" parameterType="com.skt.business.model.entity.StepParamIn">
+        INSERT INTO rpa.rpa_step_param_in (
+            step_execution_id,
+            param_key,
+            param_value,
+            param_value_default,
+            is_dynamic,
+            frst_reg_date,
+            frst_reg_user_id,
+            chg_reg_date,
+            chg_reg_user_id
+        ) VALUES (
+            #{stepExecutionId},
+            #{paramKey},
+            #{paramValue},
+            #{paramValueDefault},
+            #{isDynamic},
+            now(),
+            'SYSTEM',
+            now(),
+            'SYSTEM'
+        )
+    </insert>
+
+    <select id="selectParamInByStepExecutionId" 
+            parameterType="long"
+            resultType="com.skt.business.model.entity.StepParamIn">
+        SELECT 
+            step_execution_id AS stepExecutionId,
+            param_key AS paramKey,
+            param_value AS paramValue,
+            param_value_default AS paramValueDefault,
+            is_dynamic AS isDynamic,
+            frst_reg_date AS createdAt
+        FROM rpa.rpa_step_param_in
+        WHERE step_execution_id = #{stepExecutionId}
+        ORDER BY param_key ASC
+    </select>
+
+</mapper>
